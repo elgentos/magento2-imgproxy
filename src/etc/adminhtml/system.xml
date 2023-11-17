@@ -25,7 +25,7 @@
                 </field>
                 <field id="secure_sign_salt" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Secure Images Sign Salt</label>
-                    <comment>See https://docs.imgproxy.net/signing_the_url</comment>
+                    <comment>See https://docs.imgproxy.net/setup/securing-images</comment>
                 </field>
             </group>
         </section>
