@@ -80,7 +80,10 @@ class Image
             foreach ($options as $option) {
                 $arguments = explode(':', $option);
                 $name = array_shift($arguments);
-                $url->options()->set($name, ...$arguments);
+
+        // @todo We need to use reflection here
+                $method = sprintf('with%s', $name);
+                $url->options()->{$method}(...$arguments);
             }
         }
 
