@@ -14,11 +14,6 @@ class AssetImagePlugin
     ) {
     }
 
-    /**
-     * Change the custom URL
-     *
-     * @return bool
-     */
     public function afterGetUrl(Image $subject, $result)
     {
         $params = $subject->getImageTransformationParameters();
