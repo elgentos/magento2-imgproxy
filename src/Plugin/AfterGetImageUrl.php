@@ -13,6 +13,7 @@ use Magento\Catalog\Block\Product\Image;
 use Magento\Catalog\Helper\ImageFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Elgentos\Imgproxy\Helper\ViewConfigHelper as ViewConfig;
+use function Assert\lazy;
 
 // phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 // phpcs:disable Generic.NamingConventions.CamelCapsFunctionName.ScopeNotCamelCaps
@@ -60,17 +61,11 @@ class AfterGetImageUrl
             return $result;
         }
 
-        $imageId = $image->getData('image_id');
-
-        if (!$imageId) {
-            return $result;
-        }
-
-        $dimensions   = $this->viewConfigHelper->getImageSize($imageId);
+        $imageId    = $image->getData('image_id');
+        $dimensions = $this->viewConfigHelper->getImageSize($imageId);
 
         try {
-            $defaultImage = $this->getDefaultImageUrl($image->getData('product_id'));
-
+            $defaultImage = $this->getDefaultImageUrl(+$image->getData('product_id'));
             if (!$defaultImage) {
                 return $result;
             }

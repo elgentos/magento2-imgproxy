@@ -24,9 +24,9 @@ class ViewConfigHelper extends AbstractHelper
         $this->viewConfig = $viewConfig;
     }
 
-    public function getImageSize(string $imageId): array
+    public function getImageSize(?string $imageId): array
     {
-        $imageConfig = $this->viewConfig->getMediaAttributes('Magento_Catalog', 'images', $imageId);
+        $imageConfig = $imageId ? $this->viewConfig->getMediaAttributes('Magento_Catalog', 'images', $imageId) : [];
 
         return [
             'width' => $imageConfig['width'] ?? self::DEFAULT_IMAGE_WIDTH,
