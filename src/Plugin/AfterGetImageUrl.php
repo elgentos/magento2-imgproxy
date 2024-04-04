@@ -13,6 +13,7 @@ use Magento\Catalog\Block\Product\Image;
 use Magento\Catalog\Helper\ImageFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Elgentos\Imgproxy\Helper\ViewConfigHelper as ViewConfig;
+
 use function Assert\lazy;
 
 // phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
