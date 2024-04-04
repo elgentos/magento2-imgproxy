@@ -14,12 +14,14 @@ class Curl extends \Magento\Framework\HTTP\Client\Curl
      */
     public function head($uri, array $params = [])
     {
-        $this->setOptions([
+        $this->setOptions(
+            [
             CURLOPT_URL => $uri,
             CURLOPT_RETURNTRANSFER => true,
             //CURLOPT_CUSTOMREQUEST => 'HEAD',
             //CURLOPT_NOBODY => true
-        ]);
+            ]
+        );
         $this->makeRequest('GET', $uri, $params);
     }
 }

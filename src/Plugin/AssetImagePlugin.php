@@ -11,8 +11,8 @@ class AssetImagePlugin
 {
     public function __construct(
         protected readonly ImgproxyImage $image,
-    )
-    { }
+    ) {
+    }
 
     /**
      * Change the custom URL
