@@ -16,8 +16,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Create app/etc
+        run: mkdir -p app/etc
+
       - name: Install Composer package
-        run: composer2 install --prefer-dist -o
+        run: composer2 install --prefer-dist --optimize-autoloader
 
       - name: GrumPHP
         run: vendor/bin/grumphp run
