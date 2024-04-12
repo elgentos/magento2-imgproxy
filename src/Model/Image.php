@@ -66,9 +66,7 @@ class Image
                 $arguments = explode(':', $option);
                 $name = array_shift($arguments);
 
-                // @todo We need to use reflection here
-                $method = sprintf('with%s', $name);
-                $url->options()->{$method}(...$arguments);
+                $url->options()->setUnsafe($name, ...$arguments);
             }
         }
 
