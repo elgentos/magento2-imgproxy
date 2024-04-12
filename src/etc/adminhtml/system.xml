@@ -26,7 +26,6 @@
                 <field id="secure_sign_key" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Secure Images Sign Key</label>
                     <comment><![CDATA[See https://docs.imgproxy.net/usage/signing_url]]></comment>
-                    <validate>required-entry</validate>
                     <depends>
                         <field id="imgproxy/general/enabled">1</field>
                     </depends>
@@ -34,7 +33,6 @@
                 <field id="secure_sign_salt" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Secure Images Sign Salt</label>
                     <comment><![CDATA[See https://docs.imgproxy.net/usage/signing_url]]></comment>
-                    <validate>required-entry</validate>
                     <depends>
                         <field id="imgproxy/general/enabled">1</field>
                     </depends>
@@ -68,12 +66,17 @@
                 <field id="enabled" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <label>Enabled</label>
-                    <comment><![CDATA[When enabled, fill out the production media URL so images are retrieved from a different source.]]></comment>
+                    <comment><![CDATA[When enabled, fill out the production media URL so images are retrieved from a different source. Or enable the local filesystem option ]]></comment>
+                </field>
+                <field id="use_local_filesystem" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <label>Use local filesystem</label>
                 </field>
                 <field id="production_media_url" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Production media URL</label>
                     <depends>
                         <field id="imgproxy/dev/enabled">1</field>
+                        <field id="imgproxy/dev/use_local_filesystem">0</field>
                     </depends>
                     <validate>required-entry</validate>
                     <comment><![CDATA[Only the host part of this URL is used]]></comment>

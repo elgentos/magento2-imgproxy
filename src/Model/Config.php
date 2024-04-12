@@ -17,7 +17,8 @@ class Config
         IMGPROXY_PARAMS_RESIZING_TYPE              = 'imgproxy/params/resizing_type',
         IMGPROXY_PARAMS_CUSTOM_PROCESSING_OPTIONS  = 'imgproxy/params/custom_processing_options',
         IMGPROXY_DEV_ENABLED                       = 'imgproxy/dev/enabled',
-        IMGPROXY_DEV_PRODUCTION_MEDIA_URL          = 'imgproxy/dev/production_media_url';
+        IMGPROXY_DEV_PRODUCTION_MEDIA_URL          = 'imgproxy/dev/production_media_url',
+        IMGPROXY_DEV_USE_LOCAL_FILESYSTEM          = 'imgproxy/dev/use_local_filesystem';
 
     protected ScopeConfigInterface $scopeConfig;
 
@@ -62,6 +63,15 @@ class Config
             ScopeInterface::SCOPE_STORE,
             $storeId
         ) ?: null;
+    }
+
+    public function getUseLocalFileSystem(?int $storeId = null): bool
+    {
+        return (bool) $this->scopeConfig->getValue(
+            self::IMGPROXY_DEV_USE_LOCAL_FILESYSTEM,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 
     public function getSignKey(?int $storeId = null): ?string
