@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Elgentos\Imgproxy\Model;
 
-use Elgentos\Imgproxy\Service\Curl;
 use Exception;
 use Imgproxy\UrlBuilder;
 use Magento\Store\Model\Store;
@@ -17,7 +16,6 @@ class Image
     public function __construct(
         private readonly Config                $config,
         private readonly StoreManagerInterface $storeManager,
-        private readonly Curl                  $curl
     ) {
     }
 
@@ -89,7 +87,6 @@ class Image
                 $store->getBaseUrl(),
                 PHP_URL_SCHEME
             );
-
 
             $urlScheme = sprintf('%s%s%s', $parsedUrlScheme, '://', $baseDomain);
 
