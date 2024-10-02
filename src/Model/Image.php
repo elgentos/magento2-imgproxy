@@ -102,7 +102,7 @@ class Image
         return $imgProxyUrl;
     }
 
-    public function convertCustomProcessingOptionsToInt(array $arguments): array
+    private function convertCustomProcessingOptionsToInt(array $arguments): array
     {
         foreach ($arguments as $key => $value) {
             if (is_numeric($value) && ctype_digit($value)) {
