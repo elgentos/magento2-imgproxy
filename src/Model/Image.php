@@ -78,7 +78,8 @@ class Image
         if ($customProcessingOptions) {
             $options = array_map('trim', explode('/', $customProcessingOptions));
             foreach ($options as $option) {
-                $arguments = explode(':', $option);
+                $arguments = $this->convertCustomProcessingOptionsToInt(explode(':', $option));
+
                 $name = array_shift($arguments);
 
         // @todo We need to use reflection here
@@ -99,5 +100,16 @@ class Image
         }
 
         return $imgProxyUrl;
+    }
+
+    public function convertCustomProcessingOptionsToInt(array $arguments): array
+    {
+        foreach ($arguments as $key => $value) {
+            if (is_numeric($value) && ctype_digit($value)) {
+                $arguments[$key] = (int)$value;
+            }
+        }
+
+        return $arguments;
     }
 }
