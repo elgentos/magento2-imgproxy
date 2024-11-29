@@ -6,6 +6,7 @@ namespace Elgentos\Imgproxy\Model;
 
 use Elgentos\Imgproxy\Service\Curl;
 use Exception;
+use Imgproxy\OptionSet;
 use Imgproxy\UrlBuilder;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -78,13 +79,15 @@ class Image
         if ($customProcessingOptions) {
             $options = array_map('trim', explode('/', $customProcessingOptions));
             foreach ($options as $option) {
-                $arguments = $this->convertCustomProcessingOptionsToInt(explode(':', $option));
+                $arguments = explode(':', $option);
+                $method = sprintf('with%s', array_shift($arguments));
 
-                $name = array_shift($arguments);
+                $reflectionClass = new \ReflectionClass($url->options());
+                if (! $reflectionClass->hasMethod($method)) {
+                    continue;
+                }
 
-        // @todo We need to use reflection here
-                $method = sprintf('with%s', $name);
-                $url->options()->{$method}(...$arguments);
+                $url->options()->{$method}(...$this->castArguments($url->options(), $method, $arguments));
             }
         }
 
@@ -102,14 +105,18 @@ class Image
         return $imgProxyUrl;
     }
 
-    private function convertCustomProcessingOptionsToInt(array $arguments): array
+    private function castArguments(OptionSet $class, string $methodName, array $arguments): array
     {
-        foreach ($arguments as $key => $value) {
-            if (is_numeric($value) && ctype_digit($value)) {
-                $arguments[$key] = (int)$value;
-            }
-        }
+        $reflectionMethod = new \ReflectionMethod($class, $methodName);
+        $parameters = $reflectionMethod->getParameters();
 
-        return $arguments;
+        return array_map(function($parameter, $argument) {
+            $paramType = $parameter->getType();
+            if ($paramType) {
+                $typeName = $paramType->getName();
+                settype($argument, $typeName);
+            }
+            return $argument;
+        }, $parameters, $arguments);
     }
 }
