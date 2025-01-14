@@ -13,6 +13,7 @@ use Magento\Catalog\Block\Product\Image;
 use Magento\Catalog\Helper\ImageFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Elgentos\Imgproxy\Helper\ViewConfigHelper as ViewConfig;
+use Psr\Log\LoggerInterface;
 
 // phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 // phpcs:disable Generic.NamingConventions.CamelCapsFunctionName.ScopeNotCamelCaps
@@ -34,7 +35,8 @@ class AfterGetImageUrl
         ProductRepositoryInterface $productRepository,
         ImageFactory $imageHelperFactory,
         ViewConfig $viewConfigHelper,
-        Config $config
+        Config $config,
+        LoggerInterface $logger
     ) {
         $this->image = $image;
         $this->productRepository = $productRepository;
@@ -75,6 +77,12 @@ class AfterGetImageUrl
                 $dimensions['height']
             );
         } catch (Exception $e) {
+            $this->logger->error('[IMGPROXY] Error occurred while processing custom image URL.', [
+                'product_id' => $image->getData('product_id'),
+                'image_id' => $imageId,
+                'exception' => $e,
+            ]);
+
             return $result;
         }
     }
@@ -97,6 +105,12 @@ class AfterGetImageUrl
         try {
             return $this->productRepository->getById($id);
         } catch (NoSuchEntityException $e) {
+            // Log the exception as a warning with the product ID
+            $this->logger->warning('[IMGPROXY] Product not found.', [
+                'product_id' => $id,
+                'exception' => $e->getMessage(),
+            ]);
+
             return null;
         }
     }
