@@ -91,6 +91,10 @@ class AddImagesToGalleryBlock
 
             return $images;
         } catch (Exception $e) {
+            $this->logger->error('[IMGPROXY] Error occurred while processing images.', [
+                'exception' => $e,
+            ]);
+
             return $images;
         }
     }

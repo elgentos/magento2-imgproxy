@@ -10,6 +10,7 @@ use Imgproxy\OptionSet;
 use Imgproxy\UrlBuilder;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
 
 // phpcs:disable Magento2.Functions.DiscouragedFunction.Discouraged
 
@@ -18,7 +19,8 @@ class Image
     public function __construct(
         private readonly Config $config,
         private readonly StoreManagerInterface $storeManager,
-        private readonly Curl $curl
+        private readonly Curl $curl,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -61,6 +63,11 @@ class Image
                 $this->config->getSignSalt()
             );
         } catch (Exception $e) {
+            // Log the exception message and stack trace
+            $this->logger->error('[IMGPROXY] Failed to create UrlBuilder.', [
+                'exception' => $e,
+            ]);
+
             return $currentUrl;
         }
 
@@ -99,6 +106,12 @@ class Image
                 return $currentUrl;
             }
         } catch (Exception $e) {
+            // Log the exception message and stack trace
+            $this->logger->error('[IMGPROXY] Exception occurred while checking image proxy URL.', [
+                'url' => $imgProxyUrl,
+                'exception' => $e,
+            ]);
+
             return $currentUrl;
         }
 
