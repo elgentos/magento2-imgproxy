@@ -28,7 +28,7 @@ class Image
         string $currentUrl,
         int $width,
         int $height,
-        bool $skipRequest
+        bool $skipRequest = false
     ): string {
         if (!$this->config->isEnabled()) {
             return $currentUrl;
