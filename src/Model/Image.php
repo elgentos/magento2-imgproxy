@@ -27,7 +27,8 @@ class Image
     public function getCustomUrl(
         string $currentUrl,
         int $width,
-        int $height
+        int $height,
+        bool $skipRequest
     ): string {
         if (!$this->config->isEnabled()) {
             return $currentUrl;
@@ -99,6 +100,10 @@ class Image
         }
 
         $imgProxyUrl = $url->toString();
+
+        if ($skipRequest) {
+            return $imgProxyUrl;
+        }
 
         try {
             $this->curl->head($imgProxyUrl);
