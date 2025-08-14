@@ -30,6 +30,8 @@ class AfterGetImageUrl
 
     private Config $config;
 
+    private LoggerInterface $logger;
+
     public function __construct(
         ImgproxyImage $image,
         ProductRepositoryInterface $productRepository,
@@ -43,6 +45,7 @@ class AfterGetImageUrl
         $this->imageHelperFactory = $imageHelperFactory;
         $this->viewConfigHelper = $viewConfigHelper;
         $this->config = $config;
+        $this->logger = $logger;
     }
 
     public function after__call(
@@ -77,11 +80,14 @@ class AfterGetImageUrl
                 $dimensions['height']
             );
         } catch (Exception $e) {
-            $this->logger->error('[IMGPROXY] Error occurred while processing custom image URL.', [
+            $this->logger->error(
+                '[IMGPROXY] Error occurred while processing custom image URL.',
+                [
                 'product_id' => $image->getData('product_id'),
                 'image_id' => $imageId,
                 'exception' => $e,
-            ]);
+                ]
+            );
 
             return $result;
         }
@@ -106,10 +112,13 @@ class AfterGetImageUrl
             return $this->productRepository->getById($id);
         } catch (NoSuchEntityException $e) {
             // Log the exception as a warning with the product ID
-            $this->logger->warning('[IMGPROXY] Product not found.', [
+            $this->logger->warning(
+                '[IMGPROXY] Product not found.',
+                [
                 'product_id' => $id,
                 'exception' => $e->getMessage(),
-            ]);
+                ]
+            );
 
             return null;
         }

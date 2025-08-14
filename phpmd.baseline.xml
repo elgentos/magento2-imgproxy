@@ -2,4 +2,5 @@
 <phpmd-baseline>
   <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Model/Image.php" method="getCustomUrl"/>
   <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Model/Image.php" method="getCustomUrl"/>
+  <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Model/Image.php" method="getCustomUrl"/>
 </phpmd-baseline>

@@ -8,22 +8,30 @@ use Elgentos\Imgproxy\Service\Curl;
 use Exception;
 use Imgproxy\OptionSet;
 use Imgproxy\UrlBuilder;
+use InvalidArgumentException;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionParameter;
+use ReflectionUnionType;
 
 // phpcs:disable Magento2.Functions.DiscouragedFunction.Discouraged
 
 class Image
 {
     public function __construct(
-        private readonly Config $config,
-        private readonly StoreManagerInterface $storeManager,
-        private readonly Curl $curl,
-        private readonly LoggerInterface $logger,
+        private Config $config,
+        private StoreManagerInterface $storeManager,
+        private Curl $curl,
+        private LoggerInterface $logger,
     ) {
     }
 
+    // phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
     public function getCustomUrl(
         string $currentUrl,
         int $width,
@@ -65,9 +73,12 @@ class Image
             );
         } catch (Exception $e) {
             // Log the exception message and stack trace
-            $this->logger->error('[IMGPROXY] Failed to create UrlBuilder.', [
+            $this->logger->error(
+                '[IMGPROXY] Failed to create UrlBuilder.',
+                [
                 'exception' => $e,
-            ]);
+                ]
+            );
 
             return $currentUrl;
         }
@@ -90,7 +101,7 @@ class Image
                 $arguments = explode(':', $option);
                 $method = sprintf('with%s', array_shift($arguments));
 
-                $reflectionClass = new \ReflectionClass($url->options());
+                $reflectionClass = new ReflectionClass($url->options());
                 if (! $reflectionClass->hasMethod($method)) {
                     continue;
                 }
@@ -112,10 +123,13 @@ class Image
             }
         } catch (Exception $e) {
             // Log the exception message and stack trace
-            $this->logger->error('[IMGPROXY] Exception occurred while checking image proxy URL.', [
+            $this->logger->error(
+                '[IMGPROXY] Exception occurred while checking image proxy URL.',
+                [
                 'url' => $imgProxyUrl,
                 'exception' => $e,
-            ]);
+                ]
+            );
 
             return $currentUrl;
         }
@@ -123,18 +137,43 @@ class Image
         return $imgProxyUrl;
     }
 
+    /**
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
     private function castArguments(OptionSet $class, string $methodName, array $arguments): array
     {
-        $reflectionMethod = new \ReflectionMethod($class, $methodName);
+        $reflectionMethod = new ReflectionMethod($class, $methodName);
         $parameters = $reflectionMethod->getParameters();
 
-        return array_map(function($parameter, $argument) {
-            $paramType = $parameter->getType();
-            if ($paramType) {
-                $typeName = $paramType->getName();
-                settype($argument, $typeName);
-            }
-            return $argument;
-        }, $parameters, $arguments);
+        return array_map(
+            function (ReflectionParameter $parameter, $argument) {
+                $paramType = $parameter->getType();
+
+                if ($paramType instanceof ReflectionNamedType) {
+                    settype($argument, $paramType->getName());
+                    return $argument;
+                }
+
+                if ($paramType instanceof ReflectionUnionType) {
+                    foreach ($paramType->getTypes() as $type) {
+                        if ($type instanceof ReflectionNamedType) {
+                            settype($argument, $type->getName());
+                            return $argument;
+                        }
+                    }
+                }
+
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'Unable to cast argument for parameter $%s in %s()',
+                        $parameter->getName(),
+                        $parameter->getDeclaringFunction()->getName()
+                    )
+                );
+            },
+            $parameters,
+            $arguments
+        );
     }
 }
