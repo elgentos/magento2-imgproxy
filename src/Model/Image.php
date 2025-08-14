@@ -28,7 +28,6 @@ class Image
         string $currentUrl,
         int $width,
         int $height,
-        bool $skipRequest = false
     ): string {
         if (!$this->config->isEnabled()) {
             return $currentUrl;
@@ -99,28 +98,7 @@ class Image
             }
         }
 
-        $imgProxyUrl = $url->toString();
-
-        if ($skipRequest) {
-            return $imgProxyUrl;
-        }
-
-        try {
-            $this->curl->head($imgProxyUrl);
-            if ($this->curl->getStatus() !== 200) {
-                return $currentUrl;
-            }
-        } catch (Exception $e) {
-            // Log the exception message and stack trace
-            $this->logger->error('[IMGPROXY] Exception occurred while checking image proxy URL.', [
-                'url' => $imgProxyUrl,
-                'exception' => $e,
-            ]);
-
-            return $currentUrl;
-        }
-
-        return $imgProxyUrl;
+        return $url->toString();
     }
 
     private function castArguments(OptionSet $class, string $methodName, array $arguments): array
