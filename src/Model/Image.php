@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Elgentos\Imgproxy\Model;
 
-use Elgentos\Imgproxy\Service\Curl;
 use Exception;
 use Imgproxy\OptionSet;
 use Imgproxy\UrlBuilder;
+use InvalidArgumentException;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
+use ReflectionException;
+use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionParameter;
+use ReflectionUnionType;
 
 // phpcs:disable Magento2.Functions.DiscouragedFunction.Discouraged
 
@@ -19,11 +24,11 @@ class Image
     public function __construct(
         private readonly Config $config,
         private readonly StoreManagerInterface $storeManager,
-        private readonly Curl $curl,
         private readonly LoggerInterface $logger,
     ) {
     }
 
+    // phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
     public function getCustomUrl(
         string $currentUrl,
         int $width,
@@ -64,9 +69,12 @@ class Image
             );
         } catch (Exception $e) {
             // Log the exception message and stack trace
-            $this->logger->error('[IMGPROXY] Failed to create UrlBuilder.', [
+            $this->logger->error(
+                '[IMGPROXY] Failed to create UrlBuilder.',
+                [
                 'exception' => $e,
-            ]);
+                ]
+            );
 
             return $currentUrl;
         }
@@ -101,18 +109,43 @@ class Image
         return $url->toString();
     }
 
+    /**
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     */
     private function castArguments(OptionSet $class, string $methodName, array $arguments): array
     {
-        $reflectionMethod = new \ReflectionMethod($class, $methodName);
+        $reflectionMethod = new ReflectionMethod($class, $methodName);
         $parameters = $reflectionMethod->getParameters();
 
-        return array_map(function($parameter, $argument) {
-            $paramType = $parameter->getType();
-            if ($paramType) {
-                $typeName = $paramType->getName();
-                settype($argument, $typeName);
-            }
-            return $argument;
-        }, $parameters, $arguments);
+        return array_map(
+            function (ReflectionParameter $parameter, $argument) {
+                $paramType = $parameter->getType();
+
+                if ($paramType instanceof ReflectionNamedType) {
+                    settype($argument, $paramType->getName());
+                    return $argument;
+                }
+
+                if ($paramType instanceof ReflectionUnionType) {
+                    foreach ($paramType->getTypes() as $type) {
+                        if ($type instanceof \ReflectionNamedType) {
+                            settype($argument, $type->getName());
+                            return $argument;
+                        }
+                    }
+                }
+
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'Unable to cast argument for parameter $%s in %s()',
+                        $parameter->getName(),
+                        $parameter->getDeclaringFunction()->getName()
+                    )
+                );
+            },
+            $parameters,
+            $arguments
+        );
     }
 }
