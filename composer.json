@@ -19,7 +19,7 @@
         "magento/module-store": "^101.1"
     },
     "require-dev": {
-        "bitexpert/phpstan-magento": "^0.30.1",
+        "bitexpert/phpstan-magento": "~0.30",
         "elgentos/testing-suite": "*",
         "phpstan/extension-installer": "^1.3",
         "symfony/finder": "^6.0",

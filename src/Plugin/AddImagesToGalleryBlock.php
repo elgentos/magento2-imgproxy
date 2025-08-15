@@ -10,6 +10,7 @@ use Exception;
 use Magento\Catalog\Block\Product\View\Gallery;
 use Elgentos\Imgproxy\Helper\ViewConfigHelper;
 use Magento\Framework\Data\Collection;
+use Psr\Log\LoggerInterface;
 
 class AddImagesToGalleryBlock
 {
@@ -19,14 +20,18 @@ class AddImagesToGalleryBlock
 
     private Config $config;
 
+    private LoggerInterface $logger;
+
     public function __construct(
         Image $image,
         ViewConfigHelper $viewConfigHelper,
-        Config $config
+        Config $config,
+        LoggerInterface $logger
     ) {
         $this->image                 = $image;
         $this->viewConfigHelper      = $viewConfigHelper;
         $this->config                = $config;
+        $this->logger                = $logger;
     }
 
     public function afterGetGalleryImages(
@@ -91,9 +96,12 @@ class AddImagesToGalleryBlock
 
             return $images;
         } catch (Exception $e) {
-            $this->logger->error('[IMGPROXY] Error occurred while processing images.', [
+            $this->logger->error(
+                '[IMGPROXY] Error occurred while processing images.',
+                [
                 'exception' => $e,
-            ]);
+                ]
+            );
 
             return $images;
         }

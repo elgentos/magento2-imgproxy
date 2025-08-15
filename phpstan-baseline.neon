@@ -1,0 +1,26 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method ReflectionType\\:\\:getName\\(\\)\\.$#"
+			count: 1
+			path: src/Model/Image.php
+
+		-
+			message: "#^Property Elgentos\\\\Imgproxy\\\\Model\\\\Image\\:\\:\\$curl is never read, only written\\.$#"
+			count: 1
+			path: src/Model/Image.php
+
+		-
+			message: "#^Access to an undefined property Elgentos\\\\Imgproxy\\\\Plugin\\\\AddImagesToGalleryBlock\\:\\:\\$logger\\.$#"
+			count: 1
+			path: src/Plugin/AddImagesToGalleryBlock.php
+
+		-
+			message: "#^Access to an undefined property Elgentos\\\\Imgproxy\\\\Plugin\\\\AfterGetImageUrl\\:\\:\\$logger\\.$#"
+			count: 2
+			path: src/Plugin/AfterGetImageUrl.php
+
+		-
+			message: "#^Constructor of class Elgentos\\\\Imgproxy\\\\Plugin\\\\AfterGetImageUrl has an unused parameter \\$logger\\.$#"
+			count: 1
+			path: src/Plugin/AfterGetImageUrl.php
