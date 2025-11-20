@@ -46,7 +46,7 @@ class AfterMediaGalleryUrl
         Field $field,
         ContextInterface $context,
         ResolveInfo $info,
-        array $value = null
+        ?array $value = null
     ) {
         if (empty($result)) {
             return $result;
